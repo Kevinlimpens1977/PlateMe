@@ -121,7 +121,7 @@ export default function SwipePage() {
       </div>
 
       {/* Card Stack */}
-      <div className="relative w-full h-full max-h-[750px] mt-4">
+      <div className="relative w-full h-[65vh] max-h-[700px] mt-16 min-h-[400px]">
         {nextDish && (
           <SwipeCard
             key={nextDish.id}
