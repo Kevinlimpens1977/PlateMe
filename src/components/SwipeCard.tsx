@@ -19,13 +19,14 @@ export function SwipeCard({ dish, onSwipe, isFront }: SwipeCardProps) {
     const x = useMotionValue(0)
     const y = useMotionValue(0)
 
-    const rotate = useTransform(x, [-200, 200], [-25, 25])
-    const opacityNope = useTransform(x, [-150, -20], [1, 0])
-    const opacityLike = useTransform(x, [20, 150], [0, 1])
-    const opacitySuper = useTransform(y, [-150, -50], [1, 0])
+    // Tinder-style transforms
+    const rotate = useTransform(x, [-200, 200], [-8, 8])
+    const scale = useTransform(x, [-150, 0, 150], [1.05, 1, 1.05])
 
-    const colorNope = useTransform(x, [-150, -20], ["#ef4444", "rgba(239, 68, 68, 0)"])
-    const colorLike = useTransform(x, [20, 150], ["rgba(34, 197, 94, 0)", "#22c55e"])
+    // Continuous opacity for full-card overlays
+    // Max opacity 0.4 at drag distance of 150
+    const likeOpacity = useTransform(x, [0, 150], [0, 0.4])
+    const nopeOpacity = useTransform(x, [0, -150], [0, 0.4])
 
     useEffect(() => {
         const unsubX = x.on("change", (currentX) => {
@@ -59,77 +60,112 @@ export function SwipeCard({ dish, onSwipe, isFront }: SwipeCardProps) {
         }
     }
 
+    const handleButtonClick = async (direction: 'left' | 'right') => {
+        if (!isFront) return;
+
+        if (direction === 'right') success()
+        else error()
+
+        await controls.start({
+            x: direction === 'right' ? 1000 : -1000,
+            rotate: direction === 'right' ? 20 : -20,
+            transition: { duration: 0.4 }
+        })
+        onSwipe(direction)
+    }
+
     return (
         <motion.div
-            drag={isFront ? true : false}
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            drag={isFront ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
             animate={controls}
-            style={{ x, y, rotate, zIndex: isFront ? 10 : 0 }}
+            style={{ x, y, rotate, scale, zIndex: isFront ? 10 : 0 }}
             className={cn(
-                "absolute top-0 left-0 w-full h-full rounded-[32px] overflow-hidden bg-white shadow-2xl cursor-grab active:cursor-grabbing",
-                !isFront && "scale-95 top-4 opacity-50 pointer-events-none"
+                "absolute top-4 left-0 w-full h-[calc(100%-32px)] rounded-[36px] overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing bg-rose-900 border-4 border-rose-900",
+                !isFront && "scale-95 top-8 opacity-50 pointer-events-none"
             )}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
         >
-            {/* Absolute Image with Overlay */}
-            <div className="relative w-full h-full">
-                {dish.image_url ? (
-                    <Image
-                        src={dish.image_url}
-                        alt={dish.name}
-                        fill
-                        className="object-cover pointer-events-none"
-                        priority={isFront}
-                    />
-                ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-4xl">🍽️</span>
+            <div className="w-full h-full bg-white rounded-[32px] overflow-hidden flex flex-col relative">
+
+                {/* LIKE OVERLAY (Green) */}
+                <motion.div
+                    style={{ opacity: likeOpacity }}
+                    className="absolute inset-0 z-50 bg-green-500 pointer-events-none flex items-center justify-center"
+                >
+                    <div className="rounded-full border-4 border-white p-6 transform scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-white drop-shadow-lg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
                     </div>
-                )}
+                </motion.div>
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/80 pointer-events-none" />
+                {/* NOPE OVERLAY (Red) */}
+                <motion.div
+                    style={{ opacity: nopeOpacity }}
+                    className="absolute inset-0 z-50 bg-red-500 pointer-events-none flex items-center justify-center"
+                >
+                    <div className="rounded-full border-4 border-white p-6 transform scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                </motion.div>
 
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 w-full p-8 text-white pointer-events-none">
-                    <h2 className="text-4xl font-bold mb-2 drop-shadow-md">{dish.name}</h2>
-                    <p className="text-lg opacity-90 font-medium mb-4 drop-shadow-sm">{dish.subtitle}</p>
+                {/* Top Section: Image (Contain) */}
+                <div className="relative w-full h-[55%] bg-gray-50 flex items-center justify-center p-4">
+                    {dish.image_url ? (
+                        <div className="relative w-full h-full">
+                            <Image
+                                src={dish.image_url}
+                                alt={dish.name}
+                                fill
+                                className="object-contain pointer-events-none drop-shadow-md"
+                                priority={isFront}
+                                sizes="(max-width: 768px) 100vw, 500px"
+                            />
+                        </div>
+                    ) : (
+                        <div className="text-6xl">🍽️</div>
+                    )}
+                </div>
 
-                    <div className="flex flex-wrap gap-2 text-sm opacity-80">
+                {/* Middle Section: Text Content */}
+                <div className="flex-1 px-6 py-4 flex flex-col">
+                    <h2 className="text-2xl font-black text-gray-900 leading-tight mb-2 text-center">{dish.name}</h2>
+                    <p className="text-gray-500 font-medium text-sm mb-4 line-clamp-2 text-center">{dish.subtitle || 'Heerlijk gerecht'}</p>
+
+                    <div className="flex flex-wrap justify-center gap-2 mt-auto mb-4">
                         {dish.ingredients && dish.ingredients.split(',').slice(0, 3).map((ing, i) => (
-                            <span key={i} className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full">
+                            <span key={i} className="bg-rose-50 text-rose-800 px-3 py-1 rounded-full text-xs font-semibold">
                                 {ing.trim()}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                {/* Swipe Feedback Overlays */}
-                {isFront && (
-                    <>
-                        <motion.div
-                            style={{ opacity: opacityLike }}
-                            className="absolute top-10 left-10 border-4 border-green-400 rounded-lg px-4 py-2 transform -rotate-12"
-                        >
-                            <span className="text-4xl font-bold text-green-400 uppercase tracking-widest">LIKE</span>
-                        </motion.div>
+                {/* Bottom Section: Integrated Actions */}
+                <div className="h-20 bg-gray-50 border-t border-gray-100 flex items-center justify-around px-10 pb-2">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); handleButtonClick('left') }}
+                        className="w-14 h-14 rounded-full bg-white border-2 border-red-200 text-red-500 shadow-sm flex items-center justify-center hover:bg-red-50 hover:scale-110 transition-all active:scale-95"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
 
-                        <motion.div
-                            style={{ opacity: opacityNope }}
-                            className="absolute top-10 right-10 border-4 border-red-500 rounded-lg px-4 py-2 transform rotate-12"
-                        >
-                            <span className="text-4xl font-bold text-red-500 uppercase tracking-widest">NOPE</span>
-                        </motion.div>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); handleButtonClick('right') }}
+                        className="w-14 h-14 rounded-full bg-rose-500 text-white shadow-lg shadow-rose-200 flex items-center justify-center hover:bg-rose-600 hover:scale-110 transition-all active:scale-95"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
 
-                        <motion.div
-                            style={{ opacity: opacitySuper }}
-                            className="absolute bottom-32 w-full text-center"
-                        >
-                            <span className="text-4xl font-bold text-blue-400 uppercase tracking-widest drop-shadow-lg">SUPER LIKE</span>
-                        </motion.div>
-                    </>
-                )}
             </div>
         </motion.div>
     )

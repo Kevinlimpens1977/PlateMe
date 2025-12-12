@@ -142,14 +142,6 @@ export default function SwipePage() {
       </div>
 
       {/* Minimal Controls (Visual only, interactions handled by swipe) */}
-      <div className="absolute bottom-8 w-full px-10 flex justify-between items-center z-20 pointer-events-none opacity-50">
-        <div className="w-12 h-12 rounded-full border-2 border-red-400 flex items-center justify-center">
-          <span className="text-red-400 text-xl">✕</span>
-        </div>
-        <div className="w-12 h-12 rounded-full border-2 border-green-400 flex items-center justify-center">
-          <span className="text-green-400 text-xl">❤</span>
-        </div>
-      </div>
     </PageContainer>
   )
 }

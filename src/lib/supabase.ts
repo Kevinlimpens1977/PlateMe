@@ -17,6 +17,7 @@ export type Database = {
           ingredients: string
           preparation: string
           image_url: string
+          wine_suggestion?: string | null
           created_at: string
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           ingredients: string
           preparation: string
           image_url: string
+          wine_suggestion?: string | null
           created_at?: string
         }
         Update: {
@@ -37,6 +39,33 @@ export type Database = {
           ingredients?: string
           preparation?: string
           image_url?: string
+          wine_suggestion?: string | null
+          created_at?: string
+        }
+      }
+      user_menus: {
+        Row: {
+          id: string
+          user_name: string
+          starter_id: string | null
+          main_id: string | null
+          dessert_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_name: string
+          starter_id?: string | null
+          main_id?: string | null
+          dessert_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_name?: string
+          starter_id?: string | null
+          main_id?: string | null
+          dessert_id?: string | null
           created_at?: string
         }
       }
@@ -47,3 +76,4 @@ export type Database = {
 export type Dish = Database['public']['Tables']['dishes']['Row']
 export type DishInsert = Database['public']['Tables']['dishes']['Insert']
 export type DishUpdate = Database['public']['Tables']['dishes']['Update']
+export type UserMenu = Database['public']['Tables']['user_menus']['Row']

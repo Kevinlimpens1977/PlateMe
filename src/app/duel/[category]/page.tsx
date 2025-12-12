@@ -74,34 +74,45 @@ export default function DuelPage() {
       </div>
 
       <div className="h-full flex flex-col gap-4 py-12">
-        <DishOption dish={currentMatch.dish1} onClick={() => handleChoice(currentMatch.dish1)} label="A" color="from-blue-500 to-cyan-500" />
+        <DishOption dish={currentMatch.dish1} onClick={() => handleChoice(currentMatch.dish1)} label="A" />
 
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-white rounded-full p-4 shadow-xl border-4 border-rose-100">
           <span className="text-xl font-black text-rose-500">VS</span>
         </div>
 
-        <DishOption dish={currentMatch.dish2} onClick={() => handleChoice(currentMatch.dish2)} label="B" color="from-rose-500 to-pink-500" />
+        <DishOption dish={currentMatch.dish2} onClick={() => handleChoice(currentMatch.dish2)} label="B" />
       </div>
     </PageContainer>
   )
 }
 
-function DishOption({ dish, onClick, label, color }: { dish: DishWithScore, onClick: () => void, label: string, color: string }) {
+function DishOption({ dish, onClick, label }: { dish: DishWithScore, onClick: () => void, label: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex-1 relative rounded-3xl overflow-hidden shadow-lg border-4 border-white cursor-pointer group"
+      className="flex-1 relative rounded-[32px] overflow-hidden bg-white shadow-xl cursor-pointer group border-4 border-transparent hover:border-rose-100 active:scale-95 transition-all"
       onClick={onClick}
-      whileTap={{ scale: 0.95 }}
     >
-      <Image src={dish.image_url} alt={dish.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-      <div className={`absolute inset-0 bg-gradient-to-t ${color} mix-blend-multiply opacity-60`} />
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="h-[60%] w-full bg-gray-50 p-4 relative flex items-center justify-center">
+        <div className="relative w-full h-full">
+          <Image
+            src={dish.image_url}
+            alt={dish.name}
+            fill
+            className="object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, 300px"
+          />
+        </div>
 
-      <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-        <h3 className="text-2xl font-bold mb-1 shadow-black drop-shadow-lg">{dish.name}</h3>
-        <p className="opacity-90 text-sm line-clamp-1">{dish.subtitle}</p>
+        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur rounded-full w-8 h-8 flex items-center justify-center shadow-sm text-sm font-bold text-gray-800">
+          {label}
+        </div>
+      </div>
+
+      <div className="h-[40%] p-4 flex flex-col">
+        <h3 className="text-lg font-black text-gray-900 leading-tight mb-1">{dish.name}</h3>
+        <p className="text-gray-500 text-xs font-medium line-clamp-2">{dish.subtitle}</p>
       </div>
     </motion.div>
   )

@@ -65,14 +65,14 @@ export default function Top3Page() {
       filteredResults.some(r => r.category === cat)
     )
 
-    if (allCategoriesComplete) {
+    if (category === 'na') {
       router.push('/final')
     } else {
       const nextCategory = getNextCategory(category)
       if (nextCategory) {
         router.push(`/intro/${nextCategory}`)
       } else {
-        router.push('/')
+        router.push('/final')
       }
     }
   }
