@@ -8,6 +8,7 @@ import { PageContainer } from '@/components/ui/PageContainer'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Dish, supabase } from '@/lib/supabase'
 import { Snowfall } from '@/components/Snowfall'
+import { Wine } from 'lucide-react'
 import Image from 'next/image'
 
 export default function FinalPage() {
@@ -77,7 +78,13 @@ export default function FinalPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-md tracking-tight">
+          <h1
+            className="text-5xl font-black text-white mb-2 tracking-tight transition-all duration-300 hover:scale-[1.02] cursor-default"
+            style={{
+              textShadow: '0 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(212,175,55,0.4)',
+              WebkitTextStroke: '1px #D4AF37'
+            }}
+          >
             Kerst Menu
           </h1>
           <p className="text-white/90 font-medium text-lg">
@@ -142,7 +149,7 @@ function MenuCard({ dish, type, wine, delay }: { dish: Dish, type: string, wine:
         <h3 className="text-xl font-black text-gray-900 leading-tight">{dish.name}</h3>
 
         <div className="flex items-start gap-3 bg-rose-50 p-3 rounded-xl border border-rose-100">
-          <span className="text-2xl">🍷</span>
+          <Wine className="w-6 h-6 text-rose-500 shrink-0" />
           <div>
             <span className="text-[10px] font-bold text-rose-800 uppercase block mb-0.5">Wijnadvies</span>
             <p className="text-sm text-rose-900 font-medium leading-relaxed">
