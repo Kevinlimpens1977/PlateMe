@@ -1,20 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { Header, DishCardSmall, PrimaryButton } from '@/components'
 import { getTop3, DishWithScore, TournamentResult } from '@/lib/tournament'
 import { Category, CATEGORIES, CategoryResult } from '@/types'
 
-interface Top3PageProps {
-  params: {
-    category: Category
-  }
-}
-
-export default function Top3Page({ params }: Top3PageProps) {
-  const { category } = params
+export default function Top3Page() {
+  const params = useParams()
+  const category = params.category as Category
   const router = useRouter()
   
   // Validate category

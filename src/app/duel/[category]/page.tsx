@@ -1,20 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { Header, DuelCard, ProgressDots } from '@/components'
 import { runTournament, DishWithScore, TournamentResult } from '@/lib/tournament'
 import { Category, CATEGORIES } from '@/types'
 
-interface DuelPageProps {
-  params: {
-    category: Category
-  }
-}
-
-export default function DuelPage({ params }: DuelPageProps) {
-  const { category } = params
+export default function DuelPage() {
+  const params = useParams()
+  const category = params.category as Category
   const router = useRouter()
   
   // Validate category

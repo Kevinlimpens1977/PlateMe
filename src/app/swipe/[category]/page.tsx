@@ -1,20 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { Header, DishCardLarge, ProgressDots } from '@/components'
 import { supabase } from '@/lib/supabase'
 import { Category, CATEGORIES, DishWithScore, SwipeState, SWIPE_DIRECTIONS } from '@/types'
 
-interface SwipePageProps {
-  params: {
-    category: Category
-  }
-}
-
-export default function SwipePage({ params }: SwipePageProps) {
-  const { category } = params
+export default function SwipePage() {
+  const params = useParams()
+  const category = params.category as Category
   const router = useRouter()
   
   // Validate category
