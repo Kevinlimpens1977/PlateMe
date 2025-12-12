@@ -52,7 +52,7 @@ export default function NameEntryPage() {
                     transition={{ delay: 0.4, duration: 0.6 }}
                     className="w-full space-y-6"
                 >
-                    <GlassCard className="!p-2 !rounded-[24px] flex items-center">
+                    <GlassCard className="!p-2 !rounded-[24px] flex items-center border-[3px] border-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.2)]">
                         <input
                             type="text"
                             placeholder="Je voornaam..."
@@ -65,7 +65,7 @@ export default function NameEntryPage() {
                     <button
                         onClick={handleStart}
                         disabled={!userName.trim()}
-                        className="w-full group relative bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl shadow-rose-200/50 hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                        className="w-full group relative bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl shadow-rose-200/50 hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none border-[3px] border-[#D4AF37]"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-purple-500/10 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center justify-between relative z-10">
@@ -89,7 +89,7 @@ export default function NameEntryPage() {
                     transition={{ delay: 0.8 }}
                 >
                     <Link href="/results">
-                        <button className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-full text-sm font-bold text-gray-600 shadow-sm hover:bg-white/60 transition-colors">
+                        <button className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-full text-sm font-bold text-gray-600 shadow-sm hover:bg-white/60 transition-colors border-2 border-[#D4AF37]">
                             📋 Bekijk Inzendingen
                         </button>
                     </Link>

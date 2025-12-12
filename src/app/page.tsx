@@ -12,10 +12,10 @@ export default function InvitationPage() {
   const { impactLight } = useHaptic()
 
   return (
-    <PageContainer className="overflow-hidden">
+    <PageContainer>
       <Snowfall />
 
-      <div className="flex-1 flex flex-col items-center w-full max-w-lg mx-auto py-8 relative z-10">
+      <div className="flex-1 flex flex-col items-center w-full max-w-lg mx-auto py-8 relative z-10 overflow-y-auto h-full pb-32">
 
         {/* Video Header with Gold Border */}
         <div className="relative mb-8">
