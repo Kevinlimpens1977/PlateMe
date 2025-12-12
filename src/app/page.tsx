@@ -1,89 +1,68 @@
+"use client"
+
 import Link from 'next/link'
-import { Header, PrimaryButton, SecondaryButton } from '@/components'
-import { CATEGORIES } from '@/types'
+import { motion } from 'framer-motion'
+import { PageContainer } from '@/components/ui/PageContainer'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { useHaptic } from '@/hooks/useHaptic'
 
 export default function HomePage() {
+  const { impactLight } = useHaptic()
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100">
-      <Header showAdminLink={true} />
-      
-      <main className="max-w-4xl mx-auto px-4 py-16 text-center">
-        {/* Hero Section */}
-        <div className="mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+    <PageContainer>
+      <div className="flex-1 flex flex-col items-center justify-center space-y-12">
+        {/* Animated Title */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center space-y-4"
+        >
+          <div className="text-8xl mb-8">🍽️</div>
+          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-purple-600 tracking-tight">
             DinnerSwipe
           </h1>
-          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-2xl mx-auto">
-            Ontdek je perfecte diner door te swipen door heerlijke gerechten
+          <p className="text-xl text-gray-600 font-medium max-w-[280px] mx-auto leading-relaxed">
+            Vind je perfecte match voor vanavond
           </p>
-          
-          <div className="text-6xl mb-8">🍽️✨</div>
-        </div>
+        </motion.div>
 
-        {/* How it works */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Hoe werkt het?</h2>
-          <div className="grid md:grid-cols-3 gap-8 text-left">
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="text-3xl mb-4">👆</div>
-              <h3 className="font-semibold text-lg mb-2">Swipe</h3>
-              <p className="text-gray-600">
-                Swipe links voor niet leuk, rechts voor leuk, en omhoog voor je favoriet
-              </p>
+        {/* Categories / Start */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="w-full px-8"
+        >
+          <Link href="/intro/voor" onClick={() => impactLight()}>
+            <div className="group relative w-full bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl shadow-rose-200/50 hover:scale-[1.02] transition-transform duration-300 active:scale-95 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-purple-500/10 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-bold text-rose-500 uppercase tracking-widest mb-1">Begin hier</span>
+                  <span className="text-2xl font-bold text-gray-800">Start Etentje</span>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
             </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="text-3xl mb-4">⚔️</div>
-              <h3 className="font-semibold text-lg mb-2">Duel</h3>
-              <p className="text-gray-600">
-                Kies je favoriet in spannende duels tussen de beste gerechten
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="text-3xl mb-4">🏆</div>
-              <h3 className="font-semibold text-lg mb-2">Winnaar</h3>
-              <p className="text-gray-600">
-                Ontdek je perfecte menu van voorgerecht, hoofdgerecht en nagerecht
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Start Button */}
-        <div className="mb-12">
-          <Link href="/intro/voor">
-            <PrimaryButton className="text-lg px-8 py-4">
-              Start met Voorgerechten
-            </PrimaryButton>
           </Link>
-        </div>
+        </motion.div>
 
-        {/* Quick Category Access */}
-        <div className="bg-white p-8 rounded-2xl shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">Snel naar categorie</h3>
-          <div className="grid md:grid-cols-3 gap-4">
-            {CATEGORIES.map((category) => (
-              <Link
-                key={category.value}
-                href={`/intro/${category.value}`}
-                className="block"
-              >
-                <SecondaryButton fullWidth className="hover:bg-gray-100">
-                  {category.label}
-                </SecondaryButton>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Romantic Touch */}
-        <div className="mt-16 text-gray-600">
-          <p className="text-sm italic">
-            "Een perfect diner begint met de perfecte keuze"
-          </p>
-        </div>
-      </main>
-    </div>
+        {/* Footer/Quote */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 1 }}
+          className="text-sm font-medium text-gray-500 italic"
+        >
+          "Kies met je hart, niet met je hoofd"
+        </motion.p>
+      </div>
+    </PageContainer>
   )
 }

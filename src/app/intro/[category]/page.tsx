@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Header, PrimaryButton, SecondaryButton } from '@/components'
+import { PageContainer } from '@/components/ui/PageContainer'
+import { GlassCard } from '@/components/ui/GlassCard'
 import { Category, CATEGORIES } from '@/types'
 
 interface IntroPageProps {
@@ -11,8 +12,7 @@ interface IntroPageProps {
 
 export default async function IntroPage({ params }: IntroPageProps) {
   const { category } = await params
-  
-  // Validate category
+
   if (!CATEGORIES.find(cat => cat.value === category)) {
     notFound()
   }
@@ -22,149 +22,48 @@ export default async function IntroPage({ params }: IntroPageProps) {
       case 'voor':
         return {
           title: 'Voorgerechten',
-          description: 'Kies je perfecte voorgerecht om je diner te beginnen',
+          description: 'Swipe om je favoriete start te vinden',
           emoji: '🥗',
-          instructions: [
-            'Swipe links als je het gerecht niet lekker lijkt',
-            'Swipe rechts als je het gerecht wel lekker lijkt',
-            'Swipe omhoog als het je absolute favoriet is',
-            'Probeer ongeveer 10 gerechten te beoordelen'
-          ]
         }
       case 'hoofd':
         return {
           title: 'Hoofdgerechten',
-          description: 'Vind het hoofdgerecht dat je diner compleet maakt',
+          description: 'Het middelpunt van de avond',
           emoji: '🍽️',
-          instructions: [
-            'Wees kritisch maar eerlijk in je keuzes',
-            'Let op ingrediënten die je lekker vindt',
-            'Favorieten krijgen extra punten in het toernooi',
-            'Kies met je hart, niet met je hoofd'
-          ]
         }
       case 'na':
         return {
           title: 'Nagerechten',
-          description: 'Selecteer het perfecte zoete einde van je diner',
+          description: 'Een zoete afsluiting',
           emoji: '🍰',
-          instructions: [
-            'Denk aan je favoriete smaken',
-            'Kies gerechten die je echt wilt proberen',
-            'Favorieten hebben een voorsprong in duels',
-            'Maak je diner compleet met de perfecte afsluiter'
-          ]
         }
       default:
-        return {
-          title: '',
-          description: '',
-          emoji: '',
-          instructions: []
-        }
+        return { title: '', description: '', emoji: '' }
     }
   }
 
-  const categoryInfo = getCategoryInfo(category)
-  const nextCategory = getNextCategory(category)
+  const info = getCategoryInfo(category)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Header currentCategory={category} />
-      
-      <main className="max-w-4xl mx-auto px-4 py-16">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="text-6xl mb-6">{categoryInfo.emoji}</div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {categoryInfo.title}
-          </h1>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-            {categoryInfo.description}
-          </p>
-        </div>
+    <PageContainer>
+      <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <GlassCard className="w-full max-w-sm space-y-8 py-12">
+          <div className="text-8xl animate-bounce">{info.emoji}</div>
 
-        {/* Instructions */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Hoe te swipen
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {categoryInfo.instructions.map((instruction, index) => (
-              <div key={index} className="flex items-start space-x-3">
-                <div className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-semibold flex-shrink-0">
-                  {index + 1}
-                </div>
-                <p className="text-gray-700">{instruction}</p>
-              </div>
-            ))}
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold text-gray-800">{info.title}</h1>
+            <p className="text-xl text-gray-600">{info.description}</p>
           </div>
-        </div>
 
-        {/* Swipe Legend */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">
-            Swipe Richtingen
-          </h3>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div className="space-y-3">
-              <div className="bg-red-100 text-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl">
-                ←
+          <div className="pt-8">
+            <Link href={`/swipe/${category}`}>
+              <div className="bg-gradient-to-r from-rose-500 to-pink-600 text-white text-xl font-bold py-4 px-12 rounded-full shadow-lg shadow-rose-300 transform transition active:scale-95 hover:shadow-xl">
+                START
               </div>
-              <h4 className="font-semibold">Links</h4>
-              <p className="text-sm text-gray-600">Niet lekker</p>
-              <p className="text-xs text-gray-500">0 punten</p>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl">
-                →
-              </div>
-              <h4 className="font-semibold">Rechts</h4>
-              <p className="text-sm text-gray-600">Wel lekker</p>
-              <p className="text-xs text-gray-500">1 punt</p>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl">
-                ↑
-              </div>
-              <h4 className="font-semibold">Omhoog</h4>
-              <p className="text-sm text-gray-600">Favoriet</p>
-              <p className="text-xs text-gray-500">2 punten</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href={`/swipe/${category}`}>
-            <PrimaryButton className="text-lg px-8 py-4">
-              Start Swipen
-            </PrimaryButton>
-          </Link>
-          
-          {nextCategory && (
-            <Link href={`/intro/${nextCategory}`}>
-              <SecondaryButton className="text-lg px-8 py-4">
-                Sla over →
-              </SecondaryButton>
             </Link>
-          )}
-          
-          <Link href="/">
-            <SecondaryButton className="text-lg px-8 py-4">
-              Terug naar home
-            </SecondaryButton>
-          </Link>
-        </div>
-      </main>
-    </div>
+          </div>
+        </GlassCard>
+      </div>
+    </PageContainer>
   )
-}
-
-function getNextCategory(current: Category): Category | null {
-  const categories: Category[] = ['voor', 'hoofd', 'na']
-  const currentIndex = categories.indexOf(current)
-  return currentIndex < categories.length - 1 ? categories[currentIndex + 1] : null
 }

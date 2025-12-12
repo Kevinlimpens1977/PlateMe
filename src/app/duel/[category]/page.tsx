@@ -1,189 +1,108 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { notFound } from 'next/navigation'
-import { Header, DuelCard, ProgressDots } from '@/components'
+import { useRouter, useParams, notFound } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { runTournament, DishWithScore, TournamentResult } from '@/lib/tournament'
 import { Category, CATEGORIES } from '@/types'
+import { PageContainer } from '@/components/ui/PageContainer'
+import { GlassCard } from '@/components/ui/GlassCard'
+import Image from 'next/image'
 
 export default function DuelPage() {
   const params = useParams()
   const category = params.category as Category
   const router = useRouter()
-  
-  // Validate category
+
   if (!CATEGORIES.find(cat => cat.value === category)) {
     notFound()
   }
 
-  const [dishes, setDishes] = useState<DishWithScore[]>([])
   const [tournamentResult, setTournamentResult] = useState<TournamentResult | null>(null)
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    loadDishes()
-  }, [category])
+    const stored = localStorage.getItem(`dishes_${category}`)
 
-  const loadDishes = () => {
-    try {
-      const stored = localStorage.getItem(`dishes_${category}`)
-      
-      if (stored) {
-        const parsedDishes: DishWithScore[] = JSON.parse(stored)
-        const filteredDishes = parsedDishes.filter(dish => dish.score > 0)
-        
-        if (filteredDishes.length === 0) {
-          // No liked dishes, go back to swipe
-          router.push(`/swipe/${category}`)
-          return
-        }
+    if (stored) {
+      const parsedDishes: DishWithScore[] = JSON.parse(stored)
+      const filteredDishes = parsedDishes.filter(dish => dish.score > 0)
 
-        if (filteredDishes.length === 1) {
-          // Only one dish, auto-win
-          const result: TournamentResult = {
-            rankedDishes: filteredDishes,
-            matches: []
-          }
-          setTournamentResult(result)
-        } else {
-          // Run tournament
-          const result = runTournament(filteredDishes)
-          setTournamentResult(result)
+      if (filteredDishes.length <= 1) {
+        // Skip tournament if 0 or 1 dish
+        const result: TournamentResult = {
+          rankedDishes: filteredDishes,
+          matches: []
         }
-        
-        setDishes(filteredDishes)
-      } else {
-        // No stored data, go back to swipe
-        router.push(`/swipe/${category}`)
+        setTournamentResult(result)
+        localStorage.setItem(`tournament_${category}`, JSON.stringify(result))
+        router.push(`/top3/${category}`)
+        return
       }
-    } catch (error) {
-      console.error('Error loading dishes:', error)
-      router.push(`/swipe/${category}`)
-    } finally {
+
+      setTournamentResult(runTournament(filteredDishes))
       setIsLoading(false)
+    } else {
+      router.push(`/swipe/${category}`)
     }
-  }
+  }, [category, router])
 
   const handleChoice = (winner: DishWithScore) => {
     if (!tournamentResult) return
-
     const nextIndex = currentMatchIndex + 1
-    
+
     if (nextIndex >= tournamentResult.matches.length) {
-      // Tournament complete, go to top 3
-      localStorage.setItem(`tournament_${category}`, JSON.stringify(tournamentResult))
+      localStorage.setItem(`tournament_${category}`, JSON.stringify(tournamentResult)) // Note: In a real app we'd update scores
       router.push(`/top3/${category}`)
     } else {
       setCurrentMatchIndex(nextIndex)
     }
   }
 
-  const getCurrentMatch = () => {
-    if (!tournamentResult || currentMatchIndex >= tournamentResult.matches.length) {
-      return null
-    }
-    return tournamentResult.matches[currentMatchIndex]
-  }
+  if (isLoading || !tournamentResult) return null
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-        <Header currentCategory={category} />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="text-4xl mb-4">⚔️</div>
-            <p className="text-xl text-gray-600">Toernooi voorbereiden...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const currentMatch = getCurrentMatch()
-
-  // Auto-win case (only one dish)
-  if (tournamentResult && tournamentResult.rankedDishes.length === 1) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-        <Header currentCategory={category} />
-        <main className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Automatische Winnaar!
-            </h2>
-            <p className="text-xl text-gray-700 mb-8">
-              Er is maar één gerecht gekozen in deze categorie
-            </p>
-            <div className="text-6xl mb-8">🏆</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              {tournamentResult.rankedDishes[0].name}
-            </h3>
-            <button
-              onClick={() => {
-                localStorage.setItem(`tournament_${category}`, JSON.stringify(tournamentResult))
-                router.push(`/top3/${category}`)
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              Volgende
-            </button>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  if (!currentMatch) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-        <Header currentCategory={category} />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <p className="text-xl text-gray-600">Geen duel beschikbaar</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const currentMatch = tournamentResult.matches[currentMatchIndex]
+  if (!currentMatch) return null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-      <Header currentCategory={category} />
-      
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Progress */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm text-gray-600">
-              Duel {currentMatchIndex + 1} van {tournamentResult?.matches.length}
-            </span>
-            <span className="text-sm text-gray-600">
-              {Math.round(((currentMatchIndex + 1) / (tournamentResult?.matches.length || 1)) * 100)}% voltooid
-            </span>
-          </div>
-          <ProgressDots current={currentMatchIndex} total={tournamentResult?.matches.length || 0} />
+    <PageContainer>
+      <div className="absolute top-4 w-full text-center z-20">
+        <span className="bg-white/30 backdrop-blur px-4 py-1 rounded-full text-sm font-bold text-gray-800">
+          Duel {currentMatchIndex + 1} / {tournamentResult.matches.length}
+        </span>
+      </div>
+
+      <div className="h-full flex flex-col gap-4 py-12">
+        <DishOption dish={currentMatch.dish1} onClick={() => handleChoice(currentMatch.dish1)} label="A" color="from-blue-500 to-cyan-500" />
+
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-white rounded-full p-4 shadow-xl border-4 border-rose-100">
+          <span className="text-xl font-black text-rose-500">VS</span>
         </div>
 
-        {/* Current Match */}
-        <div className="relative">
-          <DuelCard 
-            dish1={currentMatch.dish1}
-            dish2={currentMatch.dish2}
-            onChoice={handleChoice}
-          />
-        </div>
+        <DishOption dish={currentMatch.dish2} onClick={() => handleChoice(currentMatch.dish2)} label="B" color="from-rose-500 to-pink-500" />
+      </div>
+    </PageContainer>
+  )
+}
 
-        {/* Tournament Stats */}
-        <div className="mt-8 bg-white rounded-xl p-4 shadow-md">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Toernooi met {dishes.length} gerechten
-            </p>
-          </div>
-        </div>
-      </main>
-    </div>
+function DishOption({ dish, onClick, label, color }: { dish: DishWithScore, onClick: () => void, label: string, color: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="flex-1 relative rounded-3xl overflow-hidden shadow-lg border-4 border-white cursor-pointer group"
+      onClick={onClick}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Image src={dish.image_url} alt={dish.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+      <div className={`absolute inset-0 bg-gradient-to-t ${color} mix-blend-multiply opacity-60`} />
+      <div className="absolute inset-0 bg-black/20" />
+
+      <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+        <h3 className="text-2xl font-bold mb-1 shadow-black drop-shadow-lg">{dish.name}</h3>
+        <p className="opacity-90 text-sm line-clamp-1">{dish.subtitle}</p>
+      </div>
+    </motion.div>
   )
 }
