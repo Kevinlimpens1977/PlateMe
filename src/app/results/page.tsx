@@ -71,7 +71,7 @@ export default function ResultsPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                             >
-                                <GlassCard className="!p-6">
+                                <GlassCard className="!p-6 border-4 border-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.2)]">
                                     <div className="flex justify-between items-baseline mb-4 border-b border-gray-100 pb-2">
                                         <h3 className="text-xl font-bold text-gray-800">
                                             {entry.user_name}

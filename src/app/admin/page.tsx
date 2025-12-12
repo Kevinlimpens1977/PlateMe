@@ -208,7 +208,7 @@ export default function AdminDashboard() {
               <p className="text-gray-500">Nog geen gerechten. Tijd om te koken!</p>
             </div>
           ) : (
-            <div className="bg-white/60 backdrop-blur-xl rounded-[32px] border border-white/60 shadow-xl shadow-gray-200/50 overflow-hidden">
+            <div className="bg-white/60 backdrop-blur-xl rounded-[32px] border-4 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.3)] overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-50/50 border-b border-gray-100">
                   <tr>

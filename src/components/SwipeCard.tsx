@@ -82,7 +82,7 @@ export function SwipeCard({ dish, onSwipe, isFront }: SwipeCardProps) {
             animate={controls}
             style={{ x, y, rotate, scale, zIndex: isFront ? 10 : 0 }}
             className={cn(
-                "absolute top-4 left-0 w-full h-[calc(100%-32px)] rounded-[36px] overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing bg-rose-900 border-4 border-rose-900",
+                "absolute top-4 left-0 w-full h-[calc(100%-32px)] rounded-[36px] overflow-hidden shadow-[0_0_15px_rgba(212,175,55,0.5)] cursor-grab active:cursor-grabbing bg-rose-900 border-4 border-[#D4AF37]",
                 !isFront && "scale-95 top-8 opacity-50 pointer-events-none"
             )}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}

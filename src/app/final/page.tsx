@@ -99,7 +99,7 @@ export default function FinalPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="mt-10 mb-8 p-6 bg-white/80 backdrop-blur-xl rounded-[2rem] border border-white/60 text-center shadow-lg"
+          className="mt-10 mb-8 p-6 bg-white/80 backdrop-blur-xl rounded-[2rem] border-4 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.3)] text-center"
         >
           <p className="text-lg font-medium text-gray-800 mb-2">
             🧑‍🍳 Bericht van de Chef
