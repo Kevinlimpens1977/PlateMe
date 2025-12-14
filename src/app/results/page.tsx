@@ -7,6 +7,7 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { supabase } from '@/lib/supabase'
 import { motion } from 'framer-motion'
 import { Snowfall } from '@/components/Snowfall'
+import { Sparkles, Loader2, Utensils } from 'lucide-react'
 
 export default function ResultsPage() {
     const [results, setResults] = useState<any[]>([])
@@ -46,14 +47,29 @@ export default function ResultsPage() {
             <div className="flex-1 flex flex-col w-full max-w-4xl mx-auto py-8 pb-20 overflow-y-auto h-full relative z-10 px-4">
                 <div className="text-center mb-10">
                     <h1 className="text-3xl font-black text-white drop-shadow-md mb-2">Ingezonden Menu's</h1>
-                    <p className="text-white/80 font-medium">
+                    <p className="text-white/80 font-medium mb-6">
                         Bekijk wat anderen hebben gekozen!
                     </p>
+
+                    {!loading && results.length >= 3 && (
+                        <Link href="/consensus">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-8 py-4 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-2xl font-black shadow-lg border-2 border-[#D4AF37] relative overflow-hidden group"
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-[#D4AF37]" /> Wat vinden we alledrie lekker? <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                                </span>
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            </motion.button>
+                        </Link>
+                    )}
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-20 animate-pulse">
-                        <div className="text-4xl mb-4">⏳</div>
+                    <div className="text-center py-20 animate-pulse flex flex-col items-center">
+                        <Loader2 className="w-10 h-10 text-white mb-4 animate-spin" />
                         <p className="text-white/70">Laden...</p>
                     </div>
                 ) : results.length === 0 ? (
@@ -118,7 +134,7 @@ function DishMini({ dish, label }: { dish: any, label: string }) {
                     <img src={dish.image_url} className="object-cover absolute inset-0 w-full h-full" />
                 </div>
             ) : (
-                <span className="text-xl mb-1">🍽️</span>
+                <Utensils className="w-8 h-8 text-rose-300 mb-1" />
             )}
             <p className="text-xs font-medium text-gray-700 line-clamp-1 w-full overflow-hidden text-ellipsis">
                 {dish.name}

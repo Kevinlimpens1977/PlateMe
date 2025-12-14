@@ -7,10 +7,22 @@ import { PageContainer } from '@/components/ui/PageContainer'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { useHaptic } from '@/hooks/useHaptic'
 import { Snowfall } from '@/components/Snowfall'
-import { MapPin, Calendar, Clock, Utensils, ArrowRight } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { MapPin, Calendar, Clock, Utensils, ArrowRight, Sparkles } from 'lucide-react'
 
 export default function InvitationPage() {
   const { impactLight } = useHaptic()
+  const [showConsensus, setShowConsensus] = useState(false)
+
+  useEffect(() => {
+    const checkConsensus = async () => {
+      const { count } = await supabase.from('user_menus').select('*', { count: 'exact', head: true })
+      if (count !== null && count >= 3) {
+        setShowConsensus(true)
+      }
+    }
+    checkConsensus()
+  }, [])
 
   return (
     <PageContainer>
@@ -36,6 +48,30 @@ export default function InvitationPage() {
             />
           </motion.div>
         </div>
+
+        {/* Consensus Button (Only if 3+ menus) */}
+        <AnimatePresence>
+          {showConsensus && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full px-4 mb-8"
+            >
+              <Link href="/consensus">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 bg-white/90 backdrop-blur-sm text-gray-900 rounded-2xl font-black shadow-lg border-2 border-[#D4AF37] flex items-center justify-center gap-2 relative overflow-hidden group hover:bg-white transition-colors"
+                >
+                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                  <span>Wat vinden we alledrie lekker?</span>
+                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main Invitation Card with Gold Border */}
         <div className="w-full relative px-4">
